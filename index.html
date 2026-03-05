@@ -23,12 +23,14 @@ window.addEventListener('resize', () => {
 });
 
 const COUNT = 500;
+const PALETTE = [[210, 70], [250, 60], [180, 55]];
 let t = 0;
 
-let particles = Array.from({ length: COUNT }, () => ({
+let particles = Array.from({ length: COUNT }, (_, i) => ({
   x: Math.random() * canvas.width,
   y: Math.random() * canvas.height,
   age: Math.random() * 200,
+  color: PALETTE[i % PALETTE.length],
 }));
 
 function noise(x, y, t) {
@@ -51,7 +53,9 @@ function draw() {
     p.y += Math.sin(angle) * 1.8;
     p.age++;
 
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    const [h, s] = p.color;
+    const l = 45 + 25 * Math.sin(p.age * 0.04);
+    ctx.fillStyle = `hsla(${h}, ${s}%, ${l}%, 0.8)`;
     ctx.fillRect(p.x, p.y, 1.5, 1.5);
 
     if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height || p.age > 400) {

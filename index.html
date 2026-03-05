@@ -22,7 +22,7 @@ window.addEventListener('resize', () => {
   canvas.height = window.innerHeight;
 });
 
-const COUNT = 300;
+const COUNT = 500;
 let t = 0;
 
 let particles = Array.from({ length: COUNT }, () => ({
@@ -42,7 +42,7 @@ function noise(x, y, t) {
 function draw() {
   t += 0.0004;
 
-  ctx.fillStyle = 'rgba(10,10,10,0.015)';
+  ctx.fillStyle = 'rgba(10,10,10,0.008)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   for (const p of particles) {
@@ -54,7 +54,7 @@ function draw() {
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.fillRect(p.x, p.y, 1.5, 1.5);
 
-    if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height || p.age > 300) {
+    if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height || p.age > 400) {
       p.x = Math.random() * canvas.width;
       p.y = Math.random() * canvas.height;
       p.age = 0;

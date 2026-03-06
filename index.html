@@ -23,7 +23,7 @@ window.addEventListener('resize', () => {
   canvas.height = window.innerHeight;
 });
 
-const COUNT = 500;
+const COUNT = 600;
 const PALETTE = [[210, 70], [250, 60], [180, 55]];
 let t = 0;
 let mx = canvas.width / 2;
@@ -39,6 +39,13 @@ let particles = Array.from({ length: COUNT }, (_, i) => ({
 canvas.addEventListener('mousemove', e => {
   mx = e.clientX;
   my = e.clientY;
+});
+
+canvas.addEventListener('click', e => {
+  for (let i = 0; i < 80; i++) {
+    const idx = Math.floor(Math.random() * COUNT);
+    particles[idx] = { x: e.clientX, y: e.clientY, age: 0, color: PALETTE[idx % PALETTE.length] };
+  }
 });
 
 function noise(x, y, t) {

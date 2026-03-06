@@ -32,18 +32,18 @@ const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 const hint = document.getElementById('hint');
 
-canvas.width  = window.innerWidth;
-canvas.height = window.innerHeight;
-
-window.addEventListener('resize', () => {
+function resize() {
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
-});
+}
 
-// fade hint out after 4s
+resize();
+window.addEventListener('resize', resize);
 setTimeout(() => hint.style.opacity = '0', 4000);
 
-const COUNT = 600;
+// more particles on bigger screens
+const COUNT = Math.floor((window.innerWidth * window.innerHeight) / 2000);
+
 let t = 0;
 let mx = canvas.width / 2;
 let my = canvas.height / 2;

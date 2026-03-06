@@ -24,16 +24,21 @@ window.addEventListener('resize', () => {
 });
 
 const COUNT = 600;
-const PALETTE = [[210, 70], [250, 60], [180, 55]];
 let t = 0;
 let mx = canvas.width / 2;
 let my = canvas.height / 2;
 
-let particles = Array.from({ length: COUNT }, (_, i) => ({
+function randomPalette() {
+  const h = Math.random() * 360;
+  return [[h, 70], [(h + 40) % 360, 60], [(h + 180) % 360, 55]];
+}
+
+let palette = randomPalette();
+
+let particles = Array.from({ length: COUNT }, () => ({
   x: Math.random() * canvas.width,
   y: Math.random() * canvas.height,
   age: Math.random() * 200,
-  color: PALETTE[i % PALETTE.length],
 }));
 
 canvas.addEventListener('mousemove', e => {
@@ -44,7 +49,7 @@ canvas.addEventListener('mousemove', e => {
 canvas.addEventListener('click', e => {
   for (let i = 0; i < 80; i++) {
     const idx = Math.floor(Math.random() * COUNT);
-    particles[idx] = { x: e.clientX, y: e.clientY, age: 0, color: PALETTE[idx % PALETTE.length] };
+    particles[idx] = { x: e.clientX, y: e.clientY, age: 0 };
   }
 });
 
@@ -62,7 +67,8 @@ function draw() {
   ctx.fillStyle = 'rgba(10,10,10,0.008)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  for (const p of particles) {
+  for (let i = 0; i < particles.length; i++) {
+    const p = particles[i];
     const angle = noise(p.x * 0.003, p.y * 0.003, t) * Math.PI * 2;
 
     const dx = mx - p.x;
@@ -74,15 +80,13 @@ function draw() {
     p.y += Math.sin(angle) * 1.8 + (dy / dist) * pull * 1.8;
     p.age++;
 
-    const [h, s] = p.color;
+    const [h, s] = palette[i % palette.length];
     const l = 45 + 25 * Math.sin(p.age * 0.04);
     ctx.fillStyle = `hsla(${h}, ${s}%, ${l}%, 0.8)`;
     ctx.fillRect(p.x, p.y, 1.5, 1.5);
 
     if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height || p.age > 400) {
-      p.x = Math.random() * canvas.width;
-      p.y = Math.random() * canvas.height;
-      p.age = 0;
+      particles[i] = { x: Math.random() * canvas.width, y: Math.random() * canvas.height, age: 0 };
     }
   }
 

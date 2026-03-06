@@ -27,6 +27,7 @@ const COUNT = 600;
 let t = 0;
 let mx = canvas.width / 2;
 let my = canvas.height / 2;
+let paused = false;
 
 function randomPalette() {
   const h = Math.random() * 360;
@@ -53,6 +54,12 @@ canvas.addEventListener('click', e => {
   }
 });
 
+window.addEventListener('keydown', e => {
+  if (e.key === ' ')  paused = !paused;
+  if (e.key === 'c')  { ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+  if (e.key === 'r')  palette = randomPalette();
+});
+
 function noise(x, y, t) {
   return (
     Math.sin(x * 1.7 + t) * Math.cos(y * 1.3 - t * 0.7) +
@@ -62,31 +69,33 @@ function noise(x, y, t) {
 }
 
 function draw() {
-  t += 0.0004;
+  if (!paused) {
+    t += 0.0004;
 
-  ctx.fillStyle = 'rgba(10,10,10,0.008)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'rgba(10,10,10,0.008)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  for (let i = 0; i < particles.length; i++) {
-    const p = particles[i];
-    const angle = noise(p.x * 0.003, p.y * 0.003, t) * Math.PI * 2;
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      const angle = noise(p.x * 0.003, p.y * 0.003, t) * Math.PI * 2;
 
-    const dx = mx - p.x;
-    const dy = my - p.y;
-    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-    const pull = Math.max(0, 1 - dist / 500) * 2.5;
+      const dx = mx - p.x;
+      const dy = my - p.y;
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+      const pull = Math.max(0, 1 - dist / 500) * 2.5;
 
-    p.x += Math.cos(angle) * 1.8 + (dx / dist) * pull * 1.8;
-    p.y += Math.sin(angle) * 1.8 + (dy / dist) * pull * 1.8;
-    p.age++;
+      p.x += Math.cos(angle) * 1.8 + (dx / dist) * pull * 1.8;
+      p.y += Math.sin(angle) * 1.8 + (dy / dist) * pull * 1.8;
+      p.age++;
 
-    const [h, s] = palette[i % palette.length];
-    const l = 45 + 25 * Math.sin(p.age * 0.04);
-    ctx.fillStyle = `hsla(${h}, ${s}%, ${l}%, 0.8)`;
-    ctx.fillRect(p.x, p.y, 1.5, 1.5);
+      const [h, s] = palette[i % palette.length];
+      const l = 45 + 25 * Math.sin(p.age * 0.04);
+      ctx.fillStyle = `hsla(${h}, ${s}%, ${l}%, 0.8)`;
+      ctx.fillRect(p.x, p.y, 1.5, 1.5);
 
-    if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height || p.age > 400) {
-      particles[i] = { x: Math.random() * canvas.width, y: Math.random() * canvas.height, age: 0 };
+      if (p.x < 0 || p.x > canvas.width || p.y < 0 || p.y > canvas.height || p.age > 400) {
+        particles[i] = { x: Math.random() * canvas.width, y: Math.random() * canvas.height, age: 0 };
+      }
     }
   }
 

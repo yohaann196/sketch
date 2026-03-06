@@ -5,15 +5,32 @@
 <title>sketch</title>
 <style>
   * { margin: 0; padding: 0; }
-  body { background: #0a0a0a; overflow: hidden; }
-  canvas { cursor: crosshair; }
+  body { background: #0a0a0a; overflow: hidden; font-family: monospace; }
+  canvas { cursor: crosshair; display: block; }
+  #hint {
+    position: fixed;
+    bottom: 20px;
+    left: 24px;
+    color: #333;
+    font-size: 11px;
+    line-height: 1.8;
+    pointer-events: none;
+    transition: opacity 1s;
+  }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
+<div id="hint">
+  space — pause<br>
+  r — new color<br>
+  c — clear<br>
+  click — burst
+</div>
 <script>
 const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
+const hint = document.getElementById('hint');
 
 canvas.width  = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -22,6 +39,9 @@ window.addEventListener('resize', () => {
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
 });
+
+// fade hint out after 4s
+setTimeout(() => hint.style.opacity = '0', 4000);
 
 const COUNT = 600;
 let t = 0;

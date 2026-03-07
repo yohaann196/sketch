@@ -35,29 +35,31 @@ click — burst
 
 <script>
 
-const canvas = document.getElementById("c")
-const ctx = canvas.getContext("2d")
-const hint = document.getElementById("hint")
+const canvas=document.getElementById("c")
+const ctx=canvas.getContext("2d")
+const hint=document.getElementById("hint")
 
 function resize(){
-canvas.width = innerWidth
-canvas.height = innerHeight
+canvas.width=innerWidth
+canvas.height=innerHeight
 }
 resize()
 addEventListener("resize",resize)
 
 setTimeout(()=>hint.style.opacity=0,4000)
 
-const COUNT = Math.floor((innerWidth*innerHeight)/1500)
+const COUNT=Math.floor((innerWidth*innerHeight)/1500)
 
 let t=0
 let mx=canvas.width/2
 let my=canvas.height/2
 let paused=false
 
+const LIFE=180
+
 function randomPalette(){
 const base=Math.random()*360
-return [
+return[
 [base,70],
 [(base+40)%360,70],
 [(base+200)%360,60],
@@ -70,7 +72,7 @@ let palette=randomPalette()
 let particles=Array.from({length:COUNT},()=>({
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,
-age:Math.random()*300,
+age:Math.random()*LIFE,
 size:Math.random()*1.6+0.3
 }))
 
@@ -87,14 +89,12 @@ particles[idx]={x:e.clientX,y:e.clientY,age:0,size:Math.random()*2}
 })
 
 addEventListener("keydown",e=>{
-if(e.key===" ") paused=!paused
+if(e.key===" ")paused=!paused
 if(e.key==="c"){
-ctx.globalCompositeOperation="source-over"
 ctx.fillStyle="#050505"
 ctx.fillRect(0,0,canvas.width,canvas.height)
-ctx.globalCompositeOperation="lighter"
 }
-if(e.key==="r") palette=randomPalette()
+if(e.key==="r")palette=randomPalette()
 })
 
 function noise(x,y,t){
@@ -113,7 +113,7 @@ if(!paused){
 
 t+=0.0004
 
-ctx.fillStyle="rgba(5,5,5,0.03)"
+ctx.fillStyle="rgba(5,5,5,0.08)"
 ctx.fillRect(0,0,canvas.width,canvas.height)
 
 for(let i=0;i<particles.length;i++){
@@ -132,20 +132,19 @@ p.y+=Math.sin(angle)*1.7+(dy/dist)*pull*1.5
 
 p.age++
 
+const lifeRatio=p.age/LIFE
+const alpha=1-lifeRatio
+
 const [h,s]=palette[i%palette.length]
 const l=50+25*Math.sin(p.age*0.03)
 
-ctx.fillStyle=`hsla(${h},${s}%,${l}%,0.9)`
+ctx.fillStyle=`hsla(${h},${s}%,${l}%,${alpha})`
 
 ctx.beginPath()
 ctx.arc(p.x,p.y,p.size,0,Math.PI*2)
 ctx.fill()
 
-if(
-p.x<0||p.x>canvas.width||
-p.y<0||p.y>canvas.height||
-p.age>500
-){
+if(p.age>LIFE){
 particles[i]={
 x:Math.random()*canvas.width,
 y:Math.random()*canvas.height,

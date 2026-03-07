@@ -43,15 +43,27 @@ let palette=randomPalette()
 let particles=Array.from({length:COUNT},()=>({
   x:Math.random()*canvas.width,
   y:Math.random()*canvas.height,
+  vx:0,
+  vy:0,
   age:Math.random()*LIFE,
   size:Math.random()*1.6+0.3
 }))
 
 canvas.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY})
+
 canvas.addEventListener("click",e=>{
   for(let i=0;i<120;i++){
+    const angle=Math.random()*Math.PI*2
+    const speed=Math.random()*6+2
     const idx=Math.floor(Math.random()*particles.length)
-    particles[idx]={x:e.clientX,y:e.clientY,age:0,size:Math.random()*2}
+    particles[idx]={
+      x:e.clientX,
+      y:e.clientY,
+      vx:Math.cos(angle)*speed,
+      vy:Math.sin(angle)*speed,
+      age:0,
+      size:Math.random()*2+0.5
+    }
   }
 })
 
@@ -61,6 +73,8 @@ window.addEventListener("keydown",e=>{
     particles=Array.from({length:COUNT},()=>({
       x:Math.random()*canvas.width,
       y:Math.random()*canvas.height,
+      vx:0,
+      vy:0,
       age:LIFE,
       size:Math.random()*1.6+0.3
     }))
@@ -81,6 +95,12 @@ function draw(){
     
     for(let i=0;i<particles.length;i++){
       const p=particles[i]
+
+      p.vx*=0.96
+      p.vy*=0.96
+      p.x+=p.vx
+      p.y+=p.vy
+
       const angle=noise(p.x*0.003,p.y*0.003,t)*Math.PI*2
       const dx=mx-p.x
       const dy=my-p.y
@@ -100,7 +120,7 @@ function draw(){
       ctx.fill()
 
       if(p.age>LIFE || p.x<0 || p.x>canvas.width || p.y<0 || p.y>canvas.height){
-        particles[i]={x:Math.random()*canvas.width,y:Math.random()*canvas.height,age:0,size:Math.random()*1.6+0.3}
+        particles[i]={x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:0,vy:0,age:0,size:Math.random()*1.6+0.3}
       }
     }
   }
